@@ -5,12 +5,13 @@ import org.apache.airavata.integration.utils.Constants;
 import org.apache.airavata.integration.utils.SFTPFileHandler;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.status.ExperimentStatus;
+import org.json.JSONObject;
 
 import java.io.File;
 
 public class TestExperiments {
 
-    private static String filePath = "CHANGE_ME:config.properties file path";
+    private static String filePath = "config.properties file path";
 
     public static void main(String[] args) throws Exception {
 
@@ -18,10 +19,20 @@ public class TestExperiments {
                 getIdentityManagementClient(filePath);
 
         System.out.println("Obtaning access token .....");
-        String access_token = identityManagementClient.
+        JSONObject object = identityManagementClient.
                 getAccessToken("CHANGE_ME", "CHANGE_ME");
 
+        String access_token = object.get("access_token").toString();
+        String refresh_token = object.get("refresh_token").toString();
+
         AuthzToken authzToken = identityManagementClient.getAuthToken(access_token);
+
+//        // to obtain from refresh token
+//        JSONObject jsonObject =  identityManagementClient.getTokenFromRefreshToken(refresh_token);
+//         access_token = object.get("access_token").toString();
+//        System.out.println("ACR "+ access_token);
+//        //logout
+//        identityManagementClient.logout(refresh_token);
 
         String username = authzToken.getClaimsMap().get(Constants.USER_NAME);
 
@@ -59,7 +70,7 @@ public class TestExperiments {
         }
         System.out.println("Experiment status " + status.getReason());
 
-        // fileHandler.downloadFiles(username, authzToken.getAccessToken(), path,"CHANGE_ME");
+         fileHandler.downloadFiles(username, authzToken.getAccessToken(), path,"CHANGE_ME");
 
     }
 }
